@@ -1,11 +1,11 @@
 #ifndef __P2P_HOST_H_INCLUDED__
 #define __P2P_HOST_H_INCLUDED__
 
+#include <boost/array.hpp>
+#include <boost/asio.hpp>
 #include <string>
 #include <vector>
 #include <iostream>
-#include <boost/array.hpp>
-#include <boost/asio.hpp>
 
 namespace P2PNetwork
 {
