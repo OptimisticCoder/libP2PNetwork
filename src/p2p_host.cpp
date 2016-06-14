@@ -20,7 +20,7 @@ namespace P2PNetwork
 
 		// TODO: file
 
-		for (auto it = dnsSeeds.begin(); it != dnsSeeds.end(); ++it) {
+		for (std::vector<std::string>::iterator it = dnsSeeds.begin(); it != dnsSeeds.end(); ++it) {
 
 			boost::asio::io_service io_service;
 			boost::asio::ip::tcp::resolver resolver(io_service);
