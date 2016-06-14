@@ -1,13 +1,11 @@
-cmake_minimum_required (VERSION 3.4)
+cmake_minimum_required (VERSION 3.0)
 
 project ( libP2PNetwork )
 
-find_package( Boost COMPONENTS thread )
-message( STATUS ${Boost_LIBRARY_DIRS} )
+# find_package( Boost COMPONENTS thread system date_time regex )
 
 set( EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build" )
 set( LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build" )
-# SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++11" )
 
 set( ROOT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
