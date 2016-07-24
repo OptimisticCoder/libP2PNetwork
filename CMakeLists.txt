@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.0)
 
 project ( libP2PNetwork )
 
-# find_package( Boost COMPONENTS thread system date_time regex asio array )
+# find_package( Boost COMPONENTS thread system date_time regex asio array signals )
 
 set( EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build" )
 set( LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build" )
@@ -12,11 +12,13 @@ set( ROOT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set  ( ROOT_HEADERS      
        "include/p2p_host.hpp"
        "include/p2p_listener.hpp"
+       "include/p2p_connection.hpp"
      )
 
 set  ( ROOT_SRC
        "src/p2p_host.cpp"
        "src/p2p_listener.cpp"
+       "src/p2p_connection.cpp"
      )
 
 source_group( "include" FILES ${ROOT_HEADERS} )

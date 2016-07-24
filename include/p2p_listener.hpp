@@ -7,6 +7,12 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <boost/signal.hpp>
+#include <boost/bind.hpp>
+#include <iostream>
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
+#include "p2p_connection.hpp"
 
 using namespace boost::asio::ip;
 
@@ -15,16 +21,19 @@ namespace P2PNetwork
 	class p2p_listener
 	{
 	public:
-		p2p_listener();
+		p2p_listener(boost::asio::io_service &io_service, int incomingPort);
 		~p2p_listener();
 
-		void Start(int incomingPort, std::string myName, std::string publicKey);
+		boost::signal<void(int)>    NewConnection;
 
 	private:
-		void listenForIncoming(boost::asio::ip::tcp::endpoint endpoint, boost::asio::io_service* port);
+		void listenForIncoming();
+
+		void handle_accept(p2p_connection::pointer new_connection, const boost::system::error_code& error);
 
 		std::vector<boost::thread*> _listenerThreads;
-		boost::asio::io_service _io_service;
+		boost::asio::io_service &_io_service;
+		tcp::acceptor acceptor_;
 	};
 }
 
