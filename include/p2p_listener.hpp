@@ -7,7 +7,7 @@
 #include <string>
 #include <algorithm>
 #include <vector>
-#include <boost/signal.hpp>
+#include <boost/signals2/signal.hpp>
 #include <boost/bind.hpp>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
@@ -24,7 +24,7 @@ namespace P2PNetwork
 		p2p_listener(boost::asio::io_service &io_service, int incomingPort);
 		~p2p_listener();
 
-		boost::signal<void(int)>    NewConnection;
+		boost::signals2::signal<void(int)>    NewConnection;
 
 	private:
 		void listenForIncoming();
