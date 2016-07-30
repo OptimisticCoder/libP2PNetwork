@@ -1,3 +1,6 @@
+#ifndef __P2P_CONNECTION_H_INCLUDED__
+#define __P2P_CONNECTION_H_INCLUDED__
+
 #include <iostream>
 #include <string>
 #include <boost/bind.hpp>
@@ -32,3 +35,5 @@ namespace P2PNetwork
 		tcp::socket socket_;
 	};
 }
+
+#endif
