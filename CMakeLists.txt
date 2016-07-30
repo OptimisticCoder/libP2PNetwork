@@ -13,12 +13,14 @@ set  ( ROOT_HEADERS
        "include/p2p_host.hpp"
        "include/p2p_listener.hpp"
        "include/p2p_connection.hpp"
+       "include/p2p_manager.hpp"
      )
 
 set  ( ROOT_SRC
        "src/p2p_host.cpp"
        "src/p2p_listener.cpp"
        "src/p2p_connection.cpp"
+       "src/p2p_manager.cpp"
      )
 
 source_group( "include" FILES ${ROOT_HEADERS} )
