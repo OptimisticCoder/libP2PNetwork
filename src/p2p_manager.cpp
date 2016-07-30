@@ -9,6 +9,101 @@ namespace P2PNetwork
 
 	p2p_manager::~p2p_manager()
 	{
+		delete _listener;
 
+		for (size_t i = 0; i < _threads.size(); i++)
+		{
+			_threads[i]->interrupt();
+			_threads[i]->join();
+			delete _threads[i];
+		}
+	}
+
+	void p2p_manager::Run(int incomingPort)
+	{
+		// first, start the listener thread
+		boost::thread* listenerThread = new boost::thread(&p2p_manager::listener_run, this, incomingPort);
+		_threads.push_back(listenerThread);
+
+		// create a vector of dns seeds for the host manager
+		const std::string arr[] = { "dnsseed.uape.co.uk" };
+		std::vector<std::string> vec(arr, arr + sizeof(arr) / sizeof(arr[0]));
+
+		p2p_host hostManager;
+		std::vector<p2p_host> hosts;
+
+		try
+		{
+			// 6453 is the default port
+			hosts = hostManager.LoadAll("hosts", vec, 6453);
+		}
+		catch (std::exception const &ex) {
+			Log(ex.what());
+		}
+		
+		boost::thread* workerA = new boost::thread(&p2p_manager::outgoing_run, this, hosts);
+		_threads.push_back(workerA);
+	}
+
+	void p2p_manager::listener_run(int incomingPort)
+	{
+		boost::asio::io_service io;
+		_listener = new p2p_listener(io, incomingPort);
+		_listener->NewConnection.connect(boost::bind(&p2p_manager::on_new_connection, this, _1, _2));
+		_listener->ListenForIncoming();
+
+		std::string msg = "Listening on port ";
+
+		std::stringstream ss;
+		ss << incomingPort;
+		msg.append(ss.str());
+
+		Log(msg);
+
+		io.run();
+	}
+
+	void p2p_manager::outgoing_run(std::vector<p2p_host> hosts)
+	{
+		std::string msg("Selecting host from ");
+
+		std::stringstream ss;
+		ss << hosts.size();
+		msg.append(ss.str());
+
+		msg.append(" known peers");
+		Log(msg);
+
+		boost::asio::io_service io;
+
+		int chosenIndex = rand() % hosts.size();
+
+		msg.clear();
+		msg.append("Connecting to ");
+		msg.append(hosts[chosenIndex].Ip);
+		msg.append(":");
+
+		ss.clear();
+		ss << hosts[chosenIndex].Port;
+		msg.append(ss.str());
+
+		Log(msg);
+
+		// outgoing connection
+		p2p_connection::pointer new_connection = p2p_connection::Create(io);
+		new_connection->Log.connect(boost::bind(&p2p_manager::on_log_recieved, this, _1));
+		new_connection->Connect(hosts[chosenIndex].Ip, hosts[chosenIndex].Port);
+
+		io.run();
+	}
+
+	void p2p_manager::on_new_connection(bool isIncoming, p2p_connection::pointer connection)
+	{
+		NewConnection(isIncoming, connection);
+	}
+
+	void p2p_manager::on_log_recieved(std::string msg)
+	{
+		Log(msg);
 	}
 }

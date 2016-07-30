@@ -2,17 +2,17 @@
 
 namespace P2PNetwork
 {
-	p2p_listener::p2p_listener(int incomingPort) 
-		: acceptor_(_io_service, tcp::endpoint(tcp::v4(), incomingPort))
+	p2p_listener::p2p_listener(boost::asio::io_service &io_service, int incomingPort)
+		: _io_service(io_service), acceptor_(_io_service, tcp::endpoint(tcp::v4(), incomingPort))
 	{
-		listenForIncoming();
 	}
 
 	p2p_listener::~p2p_listener() 		
 	{
+		_io_service.stop();
 	}
 
-	void p2p_listener::listenForIncoming()
+	void p2p_listener::ListenForIncoming()
 	{
 		p2p_connection::pointer new_connection = p2p_connection::Create(_io_service);
 
@@ -25,9 +25,9 @@ namespace P2PNetwork
 	{
 		if (!error)
 		{
-			NewConnection(200);
+			NewConnection(true, new_connection);
 			new_connection->Start();
-			listenForIncoming();
+			ListenForIncoming();
 		}
 	}
 }

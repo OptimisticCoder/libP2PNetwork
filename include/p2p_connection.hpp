@@ -7,6 +7,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
+#include <boost/signals2/signal.hpp>
 
 using namespace boost::asio::ip;
 
@@ -23,9 +24,12 @@ namespace P2PNetwork
 			return pointer(new p2p_connection(io_service));
 		}
 
+		boost::signals2::signal<void(std::string)>				Log;
 		tcp::socket& Socket();
 
 		void Start();
+
+		void Connect(std::string host, int port);
 
 	private:
 		p2p_connection(boost::asio::io_service& io_service);
@@ -33,6 +37,7 @@ namespace P2PNetwork
 		// todo: callback declarations
 
 		tcp::socket socket_;
+		boost::asio::io_service &_io_service;
 	};
 }
 
