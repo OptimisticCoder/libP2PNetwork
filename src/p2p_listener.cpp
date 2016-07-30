@@ -2,8 +2,8 @@
 
 namespace P2PNetwork
 {
-	p2p_listener::p2p_listener(boost::asio::io_service &io_service, int incomingPort) 
-		: _io_service(io_service), acceptor_(io_service, tcp::endpoint(tcp::v4(), incomingPort))
+	p2p_listener::p2p_listener(int incomingPort) 
+		: acceptor_(_io_service, tcp::endpoint(tcp::v4(), incomingPort))
 	{
 		listenForIncoming();
 	}

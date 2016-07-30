@@ -21,7 +21,7 @@ namespace P2PNetwork
 	class p2p_listener
 	{
 	public:
-		p2p_listener(boost::asio::io_service &io_service, int incomingPort);
+		p2p_listener(int incomingPort);
 		~p2p_listener();
 
 		boost::signals2::signal<void(int)>    NewConnection;
@@ -32,7 +32,7 @@ namespace P2PNetwork
 		void handle_accept(p2p_connection::pointer new_connection, const boost::system::error_code& error);
 
 		std::vector<boost::thread*> _listenerThreads;
-		boost::asio::io_service &_io_service;
+		boost::asio::io_service _io_service;
 		tcp::acceptor acceptor_;
 	};
 }
