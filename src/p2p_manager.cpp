@@ -21,6 +21,12 @@ namespace P2PNetwork
 
 	void p2p_manager::Run(int incomingPort)
 	{
+		_networkId = boost::uuids::random_generator()();
+
+		std::stringstream ss;
+		ss << "Network Id for this session is " << _networkId;
+		Log(ss.str());
+
 		// first, start the listener thread
 		boost::thread* listenerThread = new boost::thread(&p2p_manager::listener_run, this, incomingPort);
 		_threads.push_back(listenerThread);
@@ -40,7 +46,16 @@ namespace P2PNetwork
 		catch (std::exception const &ex) {
 			Log(ex.what());
 		}
-		
+	
+		std::string msg("Found ");
+
+		std::stringstream hostsLengthStr;
+		hostsLengthStr << hosts.size();
+		msg.append(hostsLengthStr.str());
+
+		msg.append(" known peers from hosts file");
+		Log(msg);
+
 		boost::thread* workerA = new boost::thread(&p2p_manager::outgoing_run, this, hosts);
 		_threads.push_back(workerA);
 	}
@@ -65,25 +80,16 @@ namespace P2PNetwork
 
 	void p2p_manager::outgoing_run(std::vector<p2p_host> hosts)
 	{
-		std::string msg("Selecting host from ");
-
-		std::stringstream ss;
-		ss << hosts.size();
-		msg.append(ss.str());
-
-		msg.append(" known peers");
-		Log(msg);
-
 		boost::asio::io_service io;
 
 		int chosenIndex = rand() % hosts.size();
 
-		msg.clear();
+		std::string msg;
 		msg.append("Connecting to ");
 		msg.append(hosts[chosenIndex].Ip);
 		msg.append(":");
 
-		ss.clear();
+		std::stringstream ss;
 		ss << hosts[chosenIndex].Port;
 		msg.append(ss.str());
 

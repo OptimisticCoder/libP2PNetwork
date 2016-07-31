@@ -6,6 +6,9 @@
 #include <boost/thread.hpp> 
 #include <boost/signals2/signal.hpp>
 #include <boost/bind.hpp>
+#include <boost/uuid/uuid.hpp>            
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>        
 #include <string>
 #include <vector>
 #include <iostream>
@@ -18,7 +21,7 @@ namespace P2PNetwork
 	{
 	public:
 
-		boost::signals2::signal<void(std::string)>				Log;
+		boost::signals2::signal<void(std::string)>							Log;
 		boost::signals2::signal<void(bool, p2p_connection::pointer)>		NewConnection;
 
 		p2p_manager();
@@ -36,6 +39,7 @@ namespace P2PNetwork
 
 		std::vector<boost::thread*> _threads;	
 		p2p_listener* _listener;
+		boost::uuids::uuid _networkId;
 	};
 }
 
