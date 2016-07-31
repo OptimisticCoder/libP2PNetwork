@@ -13,11 +13,12 @@ namespace P2PNetwork
 
 	void p2p_connection::Start()
 	{
-		// todo: start data exchange cycle
+		// todo: incoming cycle
 	}
 
 	void p2p_connection::Connect(std::string host, int port)
 	{
+		// outgoing cycle
 		std::stringstream ss;
 		ss << port;
 
@@ -30,7 +31,12 @@ namespace P2PNetwork
 			boost::asio::connect(socket_, iterator);
 		}
 		catch (std::exception const &ex) {
+			// there was an error connecting, so log it and exit the method, so we can try again.
 			Log(ex.what());
+			return;
 		}
+
+		// in theory, we're connected ...
+		NewConnection(false, shared_from_this());
 	}
 }

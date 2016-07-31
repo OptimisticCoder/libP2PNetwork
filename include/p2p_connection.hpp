@@ -24,7 +24,8 @@ namespace P2PNetwork
 			return pointer(new p2p_connection(io_service));
 		}
 
-		boost::signals2::signal<void(std::string)>				Log;
+		boost::signals2::signal<void(std::string)>							Log;
+		boost::signals2::signal<void(bool, p2p_connection::pointer)>		NewConnection;
 		tcp::socket& Socket();
 
 		void Start();

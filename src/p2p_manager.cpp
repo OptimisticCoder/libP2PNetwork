@@ -92,6 +92,7 @@ namespace P2PNetwork
 		// outgoing connection
 		p2p_connection::pointer new_connection = p2p_connection::Create(io);
 		new_connection->Log.connect(boost::bind(&p2p_manager::on_log_recieved, this, _1));
+		new_connection->NewConnection.connect(boost::bind(&p2p_manager::on_new_connection, this, _1, _2));
 		new_connection->Connect(hosts[chosenIndex].Ip, hosts[chosenIndex].Port);
 
 		io.run();
