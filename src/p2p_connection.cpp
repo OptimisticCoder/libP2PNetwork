@@ -13,7 +13,12 @@ namespace P2PNetwork
 
 	void p2p_connection::Start()
 	{
-		// todo: incoming cycle
+		// incoming cycle
+		boost::asio::async_read(socket_,
+			boost::asio::buffer(data_, p2p_connection::header_length),
+			boost::bind(
+			&p2p_connection::handle_read_header, shared_from_this(),
+			boost::asio::placeholders::error));
 	}
 
 	void p2p_connection::Connect(std::string host, int port)
@@ -38,5 +43,38 @@ namespace P2PNetwork
 
 		// in theory, we're connected ...
 		NewConnection(false, shared_from_this());
+	}
+
+	void p2p_connection::handle_read_header(const boost::system::error_code& error)
+	{
+		if (!error && decode_header())
+		{
+			boost::asio::async_read(socket_,
+				boost::asio::buffer(data_ + header_length, body_length_),
+				boost::bind(&p2p_connection::handle_read_body, shared_from_this(),
+				boost::asio::placeholders::error));
+		}
+		else
+		{
+			// TODO: we got disconnected or sumfin
+		}
+	}
+
+	void p2p_connection::handle_read_body(const boost::system::error_code& error)
+	{
+
+	}
+
+	bool p2p_connection::decode_header()
+	{
+		char header[header_length + 1] = "";
+		std::strncat(header, data_, header_length);
+		body_length_ = std::atoi(header);
+		if (body_length_ > max_body_length)
+		{
+			body_length_ = 0;
+			return false;
+		}
+		return true;
 	}
 }
