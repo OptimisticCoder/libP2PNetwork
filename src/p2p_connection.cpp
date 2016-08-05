@@ -41,6 +41,18 @@ namespace P2PNetwork
 			return;
 		}
 
+		std::string line = "Test data ...";
+
+		packet_.body_length(strlen(line.c_str()));
+		memcpy(packet_.body(), line.c_str(), packet_.body_length());
+		packet_.encode_header();
+
+		boost::asio::async_write(socket_,
+			boost::asio::buffer(packet_.data(),
+			packet_.length()),
+			boost::bind(&p2p_connection::handle_write, shared_from_this(),
+			boost::asio::placeholders::error));
+
 		// in theory, we're connected ...
 		NewConnection(false, shared_from_this());
 	}
@@ -76,5 +88,14 @@ namespace P2PNetwork
 		}
 	}
 
-
+	void p2p_connection::handle_write(const boost::system::error_code& error)
+	{
+		if (!error)
+		{
+		}
+		else
+		{
+			// TODO: we got disconnected or sumfin
+		}
+	}
 }

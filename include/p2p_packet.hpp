@@ -18,6 +18,8 @@ namespace P2PNetwork
 
 		char* data();
 
+		size_t length() const;
+
 		const char* body() const;
 		char* body();
 
@@ -25,6 +27,8 @@ namespace P2PNetwork
 		void body_length(size_t new_length);
 
 		bool decode_header();
+		void encode_header();
+
 	private:
 		char data_[header_length + max_body_length];
 		size_t body_length_;

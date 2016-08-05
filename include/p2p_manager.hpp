@@ -14,6 +14,7 @@
 #include <iostream>
 #include "p2p_listener.hpp"
 #include "p2p_host.hpp"
+#include "p2p_packet.hpp"
 
 namespace P2PNetwork
 {
@@ -23,6 +24,7 @@ namespace P2PNetwork
 
 		boost::signals2::signal<void(std::string)>							Log;
 		boost::signals2::signal<void(bool, p2p_connection::pointer)>		NewConnection;
+		boost::signals2::signal<void(p2p_connection::pointer, p2p_packet)>	DataReceived;
 
 		p2p_manager();
 		~p2p_manager();
@@ -36,6 +38,7 @@ namespace P2PNetwork
 
 		void on_new_connection(bool isIncoming, p2p_connection::pointer connection);
 		void on_log_recieved(std::string msg);
+		void on_data_recieved(p2p_connection::pointer connection, p2p_packet packet);
 
 		std::vector<boost::thread*> _threads;	
 		p2p_listener* _listener;

@@ -17,6 +17,11 @@ namespace P2PNetwork
 		return data_;
 	}
 
+	size_t p2p_packet::length() const
+	{
+		return header_length + body_length_;
+	}
+
 	const char* p2p_packet::body() const
 	{
 		return data_ + header_length;
@@ -50,5 +55,13 @@ namespace P2PNetwork
 			return false;
 		}
 		return true;
+	}
+
+	void p2p_packet::encode_header()
+	{
+		using namespace std; // For sprintf and memcpy.
+		char header[header_length + 1] = "";
+		sprintf(header, "%4d", body_length_);
+		memcpy(data_, header, header_length);
 	}
 }

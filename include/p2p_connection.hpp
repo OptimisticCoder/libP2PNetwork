@@ -40,6 +40,7 @@ namespace P2PNetwork
 		// callback declarations
 		void handle_read_header(const boost::system::error_code& error);
 		void handle_read_body(const boost::system::error_code& error);
+		void handle_write(const boost::system::error_code& error);
 
 		tcp::socket socket_;
 		boost::asio::io_service &_io_service;

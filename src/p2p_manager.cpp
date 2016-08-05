@@ -99,6 +99,7 @@ namespace P2PNetwork
 		p2p_connection::pointer new_connection = p2p_connection::Create(io);
 		new_connection->Log.connect(boost::bind(&p2p_manager::on_log_recieved, this, _1));
 		new_connection->NewConnection.connect(boost::bind(&p2p_manager::on_new_connection, this, _1, _2));
+		new_connection->ReceivedData.connect(boost::bind(&p2p_manager::on_data_recieved, this, _1, _2));
 		new_connection->Connect(hosts[chosenIndex].Ip, hosts[chosenIndex].Port);
 
 		io.run();
@@ -106,11 +107,17 @@ namespace P2PNetwork
 
 	void p2p_manager::on_new_connection(bool isIncoming, p2p_connection::pointer connection)
 	{
+		connection->ReceivedData.connect(boost::bind(&p2p_manager::on_data_recieved, this, _1, _2));
 		NewConnection(isIncoming, connection);
 	}
 
 	void p2p_manager::on_log_recieved(std::string msg)
 	{
 		Log(msg);
+	}
+
+	void p2p_manager::on_data_recieved(p2p_connection::pointer connection, p2p_packet packet)
+	{
+		DataReceived(connection, packet);
 	}
 }
