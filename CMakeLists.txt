@@ -14,6 +14,7 @@ set  ( ROOT_HEADERS
        "include/p2p_listener.hpp"
        "include/p2p_connection.hpp"
        "include/p2p_manager.hpp"
+       "include/p2p_packet.hpp"
      )
 
 set  ( ROOT_SRC
@@ -21,6 +22,7 @@ set  ( ROOT_SRC
        "src/p2p_listener.cpp"
        "src/p2p_connection.cpp"
        "src/p2p_manager.cpp"
+       "src/p2p_packet.cpp"
      )
 
 source_group( "include" FILES ${ROOT_HEADERS} )
