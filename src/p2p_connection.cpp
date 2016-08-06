@@ -2,7 +2,8 @@
 
 namespace P2PNetwork
 {
-	p2p_connection::p2p_connection(boost::asio::io_service& io_service) : _io_service(io_service), socket_(io_service)
+	p2p_connection::p2p_connection(boost::asio::io_service& io_service, boost::uuids::uuid &localId) 
+		: _io_service(io_service), socket_(io_service), _localId(localId)
 	{
 	}
 
@@ -41,8 +42,10 @@ namespace P2PNetwork
 			return;
 		}
 
-		std::string line = "Test data ...";
-		Send(line);
+		std::stringstream id_stream;
+		id_stream << "IDNT" << _localId;
+
+		Send(std::string(id_stream.str()));
 
 		// in theory, we're connected ...
 		NewConnection(false, shared_from_this());
@@ -50,11 +53,16 @@ namespace P2PNetwork
 
 	void p2p_connection::Send(p2p_packet packet)
 	{
-		boost::asio::async_write(socket_,
-			boost::asio::buffer(packet.data(),
-			packet.length()),
-			boost::bind(&p2p_connection::handle_write, shared_from_this(),
-			boost::asio::placeholders::error));
+		bool write_in_progress = !write_queue_.empty();
+		write_queue_.push_back(packet);
+		if (!write_in_progress)
+		{
+			boost::asio::async_write(socket_,
+				boost::asio::buffer(write_queue_.front().data(),
+				write_queue_.front().length()),
+				boost::bind(&p2p_connection::handle_write, shared_from_this(),
+				boost::asio::placeholders::error));
+		}
 	}
 
 	void p2p_connection::Send(char* data, size_t length)
@@ -94,6 +102,9 @@ namespace P2PNetwork
 	{
 		if (!error)
 		{
+			std::string body(packet_.body(), packet_.body() + packet_.body_length());
+			std::string typeCode = body.substr(0, 4);
+
 			ReceivedData(shared_from_this(), packet_);
 			boost::asio::async_read(socket_,
 				boost::asio::buffer(packet_.data(), p2p_packet::header_length),
@@ -110,6 +121,15 @@ namespace P2PNetwork
 	{
 		if (!error)
 		{
+			write_queue_.pop_front();
+			if (!write_queue_.empty())
+			{
+				boost::asio::async_write(socket_,
+					boost::asio::buffer(write_queue_.front().data(),
+					write_queue_.front().length()),
+					boost::bind(&p2p_connection::handle_write, shared_from_this(),
+					boost::asio::placeholders::error));
+			}
 		}
 		else
 		{

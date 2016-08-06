@@ -63,7 +63,7 @@ namespace P2PNetwork
 	void p2p_manager::listener_run(int incomingPort)
 	{
 		boost::asio::io_service io;
-		_listener = new p2p_listener(io, incomingPort);
+		_listener = new p2p_listener(io, incomingPort, _networkId);
 		_listener->NewConnection.connect(boost::bind(&p2p_manager::on_new_connection, this, _1, _2));
 		_listener->ListenForIncoming();
 
@@ -96,7 +96,7 @@ namespace P2PNetwork
 		Log(msg);
 
 		// outgoing connection
-		p2p_connection::pointer new_connection = p2p_connection::Create(io);
+		p2p_connection::pointer new_connection = p2p_connection::Create(io, _networkId);
 		new_connection->Log.connect(boost::bind(&p2p_manager::on_log_recieved, this, _1));
 		new_connection->NewConnection.connect(boost::bind(&p2p_manager::on_new_connection, this, _1, _2));
 		new_connection->ReceivedData.connect(boost::bind(&p2p_manager::on_data_recieved, this, _1, _2));

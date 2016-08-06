@@ -12,6 +12,9 @@
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/uuid/uuid.hpp>            
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp> 
 #include "p2p_connection.hpp"
 
 using namespace boost::asio::ip;
@@ -21,7 +24,7 @@ namespace P2PNetwork
 	class p2p_listener
 	{
 	public:
-		p2p_listener(boost::asio::io_service &io_service, int incomingPort);
+		p2p_listener(boost::asio::io_service &io_service, int incomingPort, boost::uuids::uuid &localId);
 		~p2p_listener();
 
 		void ListenForIncoming();
@@ -35,6 +38,7 @@ namespace P2PNetwork
 		std::vector<boost::thread*> _listenerThreads;
 		boost::asio::io_service &_io_service;
 		tcp::acceptor acceptor_;
+		boost::uuids::uuid &_localId;
 	};
 }
 
