@@ -121,7 +121,6 @@ namespace P2PNetwork
 					Log(std::string(ss.str()));
 
 					socket_.close();
-					_io_service.stop();
 				}
 			}
 			else
