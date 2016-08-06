@@ -33,6 +33,10 @@ namespace P2PNetwork
 		void Start();
 		void Connect(std::string host, int port);
 
+		void Send(p2p_packet packet);
+		void Send(char* data, size_t length);
+		void Send(std::string message);
+
 	private:
 
 		p2p_connection(boost::asio::io_service& io_service);

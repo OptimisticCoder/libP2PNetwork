@@ -42,19 +42,37 @@ namespace P2PNetwork
 		}
 
 		std::string line = "Test data ...";
-
-		packet_.body_length(strlen(line.c_str()));
-		memcpy(packet_.body(), line.c_str(), packet_.body_length());
-		packet_.encode_header();
-
-		boost::asio::async_write(socket_,
-			boost::asio::buffer(packet_.data(),
-			packet_.length()),
-			boost::bind(&p2p_connection::handle_write, shared_from_this(),
-			boost::asio::placeholders::error));
+		Send(line);
 
 		// in theory, we're connected ...
 		NewConnection(false, shared_from_this());
+	}
+
+	void p2p_connection::Send(p2p_packet packet)
+	{
+		boost::asio::async_write(socket_,
+			boost::asio::buffer(packet.data(),
+			packet.length()),
+			boost::bind(&p2p_connection::handle_write, shared_from_this(),
+			boost::asio::placeholders::error));
+	}
+
+	void p2p_connection::Send(char* data, size_t length)
+	{
+		packet_.body_length(length);
+		memcpy(packet_.body(), data, packet_.body_length());
+		packet_.encode_header();
+
+		Send(packet_);
+	}
+
+	void p2p_connection::Send(std::string message)
+	{
+		packet_.body_length(strlen(message.c_str()));
+		memcpy(packet_.body(), message.c_str(), packet_.body_length());
+		packet_.encode_header();
+
+		Send(packet_);
 	}
 
 	void p2p_connection::handle_read_header(const boost::system::error_code& error)
