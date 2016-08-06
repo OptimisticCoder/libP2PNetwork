@@ -25,6 +25,7 @@ namespace P2PNetwork
 	{
 		if (!error)
 		{
+			NewConnection(true, new_connection);
 			new_connection->Start();
 			ListenForIncoming();
 		}
