@@ -21,13 +21,15 @@ using namespace boost::asio::ip;
 
 namespace P2PNetwork
 {
+	class p2p_manager;
+
 	class p2p_listener
 	{
 	public:
 		p2p_listener(boost::asio::io_service &io_service, int incomingPort, boost::uuids::uuid &localId);
 		~p2p_listener();
 
-		void ListenForIncoming();
+		void ListenForIncoming(p2p_manager* manager);
 
 		boost::signals2::signal<void(bool, p2p_connection::pointer)>    NewConnection;
 
@@ -39,6 +41,7 @@ namespace P2PNetwork
 		boost::asio::io_service &_io_service;
 		tcp::acceptor acceptor_;
 		boost::uuids::uuid &_localId;
+		p2p_manager *manager_;
 	};
 }
 

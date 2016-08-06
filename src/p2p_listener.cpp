@@ -1,4 +1,5 @@
 #include "p2p_listener.hpp"
+#include "p2p_manager.hpp"
 
 namespace P2PNetwork
 {
@@ -12,9 +13,14 @@ namespace P2PNetwork
 		_io_service.stop();
 	}
 
-	void p2p_listener::ListenForIncoming()
+	void p2p_listener::ListenForIncoming(p2p_manager* manager)
 	{
+		manager_ = manager;
+
 		p2p_connection::pointer new_connection = p2p_connection::Create(_io_service, _localId);
+		new_connection->NewConnection.connect(boost::bind(&p2p_manager::on_new_connection, manager_, _1, _2));
+		new_connection->Log.connect(boost::bind(&p2p_manager::on_log_recieved, manager_, _1));
+		new_connection->ReceivedData.connect(boost::bind(&p2p_manager::on_data_recieved, manager_, _1, _2));
 
 		acceptor_.async_accept(new_connection->Socket(),
 			boost::bind(&p2p_listener::handle_accept, this, new_connection,
@@ -25,9 +31,9 @@ namespace P2PNetwork
 	{
 		if (!error)
 		{
-			NewConnection(true, new_connection);
+//			NewConnection(true, new_connection);
 			new_connection->Start();
-			ListenForIncoming();
+			ListenForIncoming(manager_);
 		}
 	}
 }
