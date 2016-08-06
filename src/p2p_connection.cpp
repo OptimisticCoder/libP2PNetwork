@@ -104,8 +104,8 @@ namespace P2PNetwork
 			if (typeCode == "IDNT")
 			{
 				boost::uuids::string_generator str_gen;
-				_remoteId = str_gen(body.substr(4));
-				if (_localId != _remoteId)
+				_remoteId = str_gen(body.substr(4, packet_.body_length() - 4));
+				if (boost::uuids::to_string(_localId) != boost::uuids::to_string(_remoteId))
 					NewConnection(false, shared_from_this());				
 			}
 			else
