@@ -109,7 +109,10 @@ namespace P2PNetwork
 	{
 		NewConnection(isIncoming, connection);
 		if (isIncoming)
+		{
+			connection->Log.connect(boost::bind(&p2p_manager::on_log_recieved, this, _1));
 			connection->ReceivedData.connect(boost::bind(&p2p_manager::on_data_recieved, this, _1, _2));
+		}
 	}
 
 	void p2p_manager::on_log_recieved(std::string msg)

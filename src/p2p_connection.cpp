@@ -111,7 +111,7 @@ namespace P2PNetwork
 				{
 					std::stringstream ss;
 					ss << "Dropped connection to self. " << socket_.remote_endpoint();
-					Log(ss.str());
+					Log(std::string(ss.str()));
 				}
 			}
 			else
