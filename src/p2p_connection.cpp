@@ -106,7 +106,13 @@ namespace P2PNetwork
 				boost::uuids::string_generator str_gen;
 				_remoteId = str_gen(body.substr(4, packet_.body_length() - 4));
 				if (boost::uuids::to_string(_localId) != boost::uuids::to_string(_remoteId))
-					NewConnection(false, shared_from_this());				
+					NewConnection(false, shared_from_this());
+				else
+				{
+					std::stringstream ss;
+					ss << "Dropped connection to self. " << socket_.remote_endpoint();
+					Log(ss.str());
+				}
 			}
 			else
 				ReceivedData(shared_from_this(), packet_);
