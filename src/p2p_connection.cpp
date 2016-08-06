@@ -46,9 +46,6 @@ namespace P2PNetwork
 		id_stream << "IDNT" << _localId;
 
 		Send(std::string(id_stream.str()));
-
-		// in theory, we're connected ...
-		NewConnection(false, shared_from_this());
 	}
 
 	void p2p_connection::Send(p2p_packet packet)
@@ -104,8 +101,16 @@ namespace P2PNetwork
 		{
 			std::string body(packet_.body(), packet_.body() + packet_.body_length());
 			std::string typeCode = body.substr(0, 4);
+			if (typeCode == "IDNT")
+			{
+				boost::uuids::string_generator str_gen;
+				_remoteId = str_gen(body.substr(4));
+				if (_localId != _remoteId)
+					NewConnection(false, shared_from_this());				
+			}
+			else
+				ReceivedData(shared_from_this(), packet_);
 
-			ReceivedData(shared_from_this(), packet_);
 			boost::asio::async_read(socket_,
 				boost::asio::buffer(packet_.data(), p2p_packet::header_length),
 				boost::bind(&p2p_connection::handle_read_header, shared_from_this(),
