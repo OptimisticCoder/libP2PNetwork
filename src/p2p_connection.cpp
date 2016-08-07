@@ -133,6 +133,10 @@ namespace P2PNetwork
 				if (write_queue_.empty())
 					Send(std::string("PONG"));
 			}
+			else if (typeCode == "PONG")
+			{
+				// do nothing
+			}
 			else if (typeCode == "IDOK")
 			{
 				boost::uuids::string_generator str_gen;
@@ -150,7 +154,7 @@ namespace P2PNetwork
 
 			if (write_queue_.empty())
 			{
-				boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+				boost::this_thread::sleep(boost::posix_time::milliseconds(3000));
 				Send(std::string("PING"));
 			}
 
