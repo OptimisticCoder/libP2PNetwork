@@ -107,10 +107,10 @@ namespace P2PNetwork
 				_remoteId = str_gen(body.substr(4, packet_.body_length() - 4));
 				if (boost::uuids::to_string(_localId) != boost::uuids::to_string(_remoteId))
 				{
-					NewConnection(false, shared_from_this());
+					NewConnection(true, shared_from_this());
 
 					std::stringstream id_stream;
-					id_stream << "IDNT" << _localId;
+					id_stream << "IDOK" << _localId;
 
 					Send(std::string(id_stream.str()));
 				}
@@ -126,10 +126,22 @@ namespace P2PNetwork
 			else
 				ReceivedData(shared_from_this(), packet_);
 
-			boost::asio::async_read(socket_,
-				boost::asio::buffer(packet_.data(), p2p_packet::header_length),
-				boost::bind(&p2p_connection::handle_read_header, shared_from_this(),
-				boost::asio::placeholders::error));
+			//boost::asio::async_read(socket_,
+			//	boost::asio::buffer(packet_.data(), p2p_packet::header_length),
+			//	boost::bind(&p2p_connection::handle_read_header, shared_from_this(),
+			//	boost::asio::placeholders::error));
+
+			if (write_queue_.empty())
+			{
+				boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+				Send(std::string("PING"));
+			}
+			//else
+			//	boost::asio::async_write(socket_,
+			//		boost::asio::buffer(write_queue_.front().data(),
+			//		write_queue_.front().length()),
+			//		boost::bind(&p2p_connection::handle_write, shared_from_this(),
+			//		boost::asio::placeholders::error));
 		}
 		else
 		{
@@ -142,14 +154,11 @@ namespace P2PNetwork
 		if (!error)
 		{
 			write_queue_.pop_front();
-			if (!write_queue_.empty())
-			{
-				boost::asio::async_write(socket_,
-					boost::asio::buffer(write_queue_.front().data(),
-					write_queue_.front().length()),
-					boost::bind(&p2p_connection::handle_write, shared_from_this(),
-					boost::asio::placeholders::error));
-			}
+
+			boost::asio::async_read(socket_,
+				boost::asio::buffer(packet_.data(), p2p_packet::header_length),
+				boost::bind(&p2p_connection::handle_read_header, shared_from_this(),
+				boost::asio::placeholders::error));
 		}
 		else
 		{
