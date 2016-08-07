@@ -7,7 +7,6 @@
 #include <string>
 #include <algorithm>
 #include <vector>
-#include <boost/signals2/signal.hpp>
 #include <boost/bind.hpp>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
@@ -30,8 +29,6 @@ namespace P2PNetwork
 		~p2p_listener();
 
 		void ListenForIncoming(p2p_manager* manager);
-
-		boost::signals2::signal<void(bool, p2p_connection::pointer)>    NewConnection;
 
 	private:
 

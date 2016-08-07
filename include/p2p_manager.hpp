@@ -22,13 +22,15 @@ namespace P2PNetwork
 	{
 	public:
 
-		boost::signals2::signal<void(std::string)>							Log;
-		boost::signals2::signal<void(bool, p2p_connection::pointer)>		NewConnection;
-		boost::signals2::signal<void(p2p_connection::pointer, p2p_packet)>	DataReceived;
+		boost::signals2::signal<void(std::string)>											Log;
+		boost::signals2::signal<void(bool, p2p_connection::pointer, boost::uuids::uuid)>	NodeConnected;
+		boost::signals2::signal<void(p2p_connection::pointer, p2p_packet)>					DataReceived;
+		boost::signals2::signal<void(boost::uuids::uuid)>									NodeDisconnected;
 
-		void on_new_connection(bool isIncoming, p2p_connection::pointer connection);
+		void on_node_connected(bool isIncoming, p2p_connection::pointer connection, boost::uuids::uuid remoteId);
 		void on_log_recieved(std::string msg);
 		void on_data_recieved(p2p_connection::pointer connection, p2p_packet packet);
+		void on_node_disconnected(boost::uuids::uuid remoteId);
 
 		p2p_manager();
 		~p2p_manager();

@@ -55,16 +55,7 @@ namespace P2PNetwork
 
 	void p2p_connection::Send(p2p_packet packet)
 	{
-		//bool write_in_progress = !write_queue_.empty();
 		write_queue_.push_back(packet);
-		//if (!write_in_progress)
-		//{
-		//	boost::asio::async_write(socket_,
-		//		boost::asio::buffer(write_queue_.front().data(),
-		//		write_queue_.front().length()),
-		//		boost::bind(&p2p_connection::handle_write, shared_from_this(),
-		//		boost::asio::placeholders::error));
-		//}
 	}
 
 	void p2p_connection::Send(char* data, size_t length)
@@ -96,7 +87,8 @@ namespace P2PNetwork
 		}
 		else
 		{
-			// TODO: we got disconnected or sumfin
+			// we got disconnected or sumfin
+			NodeDisconnected(_remoteId);
 		}
 	}
 
@@ -112,7 +104,7 @@ namespace P2PNetwork
 				_remoteId = str_gen(body.substr(4, packet_.body_length() - 4));
 				if (boost::uuids::to_string(_localId) != boost::uuids::to_string(_remoteId))
 				{
-					NewConnection(true, shared_from_this());
+					NodeConnected(true, shared_from_this(), _remoteId);
 
 					std::stringstream id_stream;
 					id_stream << "IDOK" << _localId;
@@ -142,15 +134,10 @@ namespace P2PNetwork
 				boost::uuids::string_generator str_gen;
 				_remoteId = str_gen(body.substr(4, packet_.body_length() - 4));
 
-				NewConnection(false, shared_from_this());
+				NodeConnected(false, shared_from_this(), _remoteId);
 			}
 			else
 				ReceivedData(shared_from_this(), packet_);
-
-			//boost::asio::async_read(socket_,
-			//	boost::asio::buffer(packet_.data(), p2p_packet::header_length),
-			//	boost::bind(&p2p_connection::handle_read_header, shared_from_this(),
-			//	boost::asio::placeholders::error));
 
 			if (write_queue_.empty())
 			{
@@ -166,7 +153,8 @@ namespace P2PNetwork
 		}
 		else
 		{
-			// TODO: we got disconnected or sumfin
+			// we got disconnected or sumfin
+			NodeDisconnected(_remoteId);
 		}
 	}
 
@@ -183,7 +171,8 @@ namespace P2PNetwork
 		}
 		else
 		{
-			// TODO: we got disconnected or sumfin
+			// we got disconnected or sumfin
+			NodeDisconnected(_remoteId);
 		}
 	}
 }
